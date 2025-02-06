@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Dale Sumbler">
+    <meta name="source" content="https://github.com/crazydc/SNCF">
+
+    <title>Random Cube Selector</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .container { margin-top: 20px; }
+        .button { padding: 10px 20px; font-size: 16px; cursor: pointer; margin-top: 10px; }
+        .summary {
+            max-width: 220px;
+            margin-left: 40%;
+            list-style: none;
+            color: white;
+            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .summary-item {
+            border-radius: 30%;
+            border: 2px solid black;
+            width: 36px;
+            height: 36px;
+            padding: 8px;
+            margin: 8px;
+            text-align: center;
+            font-size: 32px;
+            display: inline;
+        }
+        input { margin: 5px; padding: 5px; }
+        .note { font-size: 12px; color: gray; }
+
+        /* Table styling for input alignment */
+        table {
+            margin: auto;
+            text-align: left;
+        }
+        td {
+            padding: 8px;
+        }
+        td:first-child {
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+<h1>Random Cube Selector</h1>
+
+<div class="container">
+    <table>
+        <tr>
+            <td><label for="colors">Enter colors (comma-separated):</label></td>
+            <td><input type="text" id="colors" style="width: 300px; height: 30px; font-size: 14px;" value="Yellow,Purple,Blue,Red,Black,Brown"></td>
+        </tr>
+        <tr>
+            <td><label for="stackSize">Cubes per colour:</label></td>
+            <td><input type="number" id="stackSize" value="31" min="1"></td>
+        </tr>
+        <tr>
+            <td><label for="selectionSize">Number of cubes to select:</label></td>
+            <td><input type="number" id="selectionSize" value="36" min="1"></td>
+        </tr>
+    </table>
+</div>
+
+<button class="button" onclick="generateRandomCubes()">Select New Cubes</button>
+<div class="summary" id="summary"></div>
+
+<script>
+    function generateRandomCubes() {
+        const colors = document.getElementById("colors").value.split(",").map(c => c.trim());
+        const totalCubesPerColor = parseInt(document.getElementById("stackSize").value);
+        const totalSelection = parseInt(document.getElementById("selectionSize").value);
+
+        let allCubes = [];
+        colors.forEach(color => {
+            for (let i = 0; i < totalCubesPerColor; i++) {
+                allCubes.push(color);
+            }
+        });
+
+        allCubes.sort(() => Math.random() - 0.5);
+        let selectedCubes = allCubes.slice(0, totalSelection);
+
+        let groupedCubes = {};
+        selectedCubes.forEach(cube => {
+            if (!groupedCubes[cube]) groupedCubes[cube] = 0;
+            groupedCubes[cube]++;
+        });
+
+        let summary = document.getElementById("summary");
+        summary.innerHTML = "";
+
+        // Ensure all colors are displayed, even those with zero count
+        colors.forEach(color => {
+            let count = groupedCubes[color] || 0;  // Set count to 0 if color is not selected
+
+            let div = document.createElement("div");
+            div.className = "summary-item";
+            div.style.backgroundColor = color.toLowerCase();
+            div.textContent = count;
+            summary.appendChild(div);
+        });
+    }
+</script>
+</body>
+</html>
